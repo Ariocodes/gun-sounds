@@ -1,0 +1,78 @@
+.navbar {
+  /* can comment "position: fixed;" to stick it to the top */
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: var(--bg);
+  /* background: #794ae8; */
+  border-bottom: 1px solid var(--border);
+  padding: 14px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  color: var(--green);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+}
+
+.nav-logo span { color: var(--dim); }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* control icon spacing here */
+}
+
+.navbar ul a::before { content: './'; color: var(--border); }
+.navbar ul a:hover::before { color: var(--green); }
+.navbar ul a:hover { color: var(--green); }
+
+
+
+.link {
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  font-size: 28px;
+  color: var(--dim);
+  transition: color 0.2s;
+}
+
+.link:hover {
+  color: #794ae8;
+}
+
+
+@media (max-width: 640px) {
+
+  .navbar {
+    position: static;
+    padding: 14px 20px;
+  }
+
+  .navbar ul {
+    margin: 0;
+    gap: 18px;
+
+    overflow-x: auto;
+    white-space: nowrap;
+
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 10%,
+      black 90%,
+      transparent
+    );
+  }
+
+  .navbar ul::-webkit-scrollbar {
+    display: none;
+  }
+}

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { weapons, icons } from './weapons.jsx'
+import { weapons } from './weapons.jsx'
 import { playWeapon, preloadAll } from './soundEngine.js'
+import './App.css'
 
 function WaveformBars({ active }) {
   // 12 bars that "read" random levels while a shot/burst is playing
@@ -17,6 +18,8 @@ function WaveformBars({ active }) {
 function WeaponCard({ weapon, volume, onFire, roundCount, disabled }) {
   const [firing, setFiring] = useState(false)
   const [imageFailed, setImageFailed] = useState(false)
+  const [tilt, setTilt] = useState({ x: 0, y: 0, glareX: 50, glareY: 50, active: false })
+  const cardRef = useRef(null)
   const timeoutRef = useRef(null)
   const useImage = weapon.image && !imageFailed
 
@@ -28,15 +31,54 @@ function WeaponCard({ weapon, volume, onFire, roundCount, disabled }) {
     timeoutRef.current = setTimeout(() => setFiring(false), duration * 1000)
   }
 
+  const handleMouseMove = (e) => {
+    const card = cardRef.current
+    if (!card) return
+    const rect = card.getBoundingClientRect()
+    const px = (e.clientX - rect.left) / rect.width   // 0 → 1
+    const py = (e.clientY - rect.top) / rect.height    // 0 → 1
+
+    const maxTilt = 14 // degrees
+    const rotateX = (0.5 - py) * maxTilt * 2
+    const rotateY = (px - 0.5) * maxTilt * 2
+
+    setTilt({
+      x: rotateX,
+      y: rotateY,
+      glareX: px * 100,
+      glareY: py * 100,
+      active: true,
+    })
+  }
+
+  const handleMouseLeave = () => {
+    setTilt({ x: 0, y: 0, glareX: 50, glareY: 50, active: false })
+  }
+
   useEffect(() => () => clearTimeout(timeoutRef.current), [])
 
   return (
     <button
-      className={`card ${firing ? 'is-firing' : ''}`}
+      ref={cardRef}
+      className={`card ${firing ? 'is-firing' : ''} ${tilt.active ? 'is-tilting' : ''}`}
       onClick={handleClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       aria-pressed={firing}
       disabled={disabled}
+      style={{
+        transform: `perspective(700px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) ${tilt.active ? 'scale(1.035)' : 'scale(1)'}`,
+      }}
     >
+      <div
+        className="card-glare"
+        style={{
+          background: `radial-gradient(circle at ${tilt.glareX}% ${tilt.glareY}%, rgba(255,255,255,0.25), rgba(255,255,255,0) 60%)`,
+          opacity: tilt.active ? 1 : 0,
+        }}
+        aria-hidden="true"
+      />
+
       <div className="card-top">
         <span className="card-tag">{weapon.tag}</span>
         <span className="card-count">{String(roundCount).padStart(3, '0')}</span>
@@ -100,7 +142,7 @@ export default function App() {
 
       <header className="range-header">
         <div className="range-title">
-          <span className="eyebrow">This website is just for fun.</span>
+          <span className="eyebrow">Hmmmm...</span>
           <h1 className="mainHeader">Gun Sounds</h1>
           <p className="range-sub">
             {loadError

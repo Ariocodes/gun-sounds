@@ -1,9 +1,8 @@
-// Loads real audio files and plays them back via the Web Audio API.
-// Files are decoded into AudioBuffers once, then played from memory —
-// this keeps playback instant and lets rapid clicks overlap cleanly
-// instead of cutting a previous shot off (which a plain <audio> tag
-// tends to do).
+/* Loads real audio files and plays them back via the Web Audio API.
 
+Files are decoded into AudioBuffers once, then played from memory. This keeps playback instant and lets rapid clicks overlap cleanly
+instead of cutting a previous shot off
+*/
 let ctx = null
 const bufferCache = new Map() // url -> AudioBuffer
 const loadingCache = new Map() // url -> Promise<AudioBuffer>
@@ -16,8 +15,8 @@ function getContext() {
   return ctx
 }
 
-// Fetches + decodes a sound file once, caches the result, and reuses
-// it for every future play. Safe to call multiple times for the same url.
+
+// Fetches + decodes a sound file once, caches the result, and reuses it for every future play. Safe to call multiple times for the same url.
 export function preload(url) {
   if (bufferCache.has(url)) return Promise.resolve(bufferCache.get(url))
   if (loadingCache.has(url)) return loadingCache.get(url)
@@ -44,8 +43,8 @@ export function preload(url) {
   return promise
 }
 
-// Preload every weapon's file up front (call this once on app start)
-// so the very first click has zero fetch/decode delay.
+
+// Preload every weapon's file up front (call this once on app start) so the very first click has zero fetch/decode delay.
 export function preloadAll(weapons) {
   return Promise.all(weapons.map((w) => preload(w.file)))
 }
@@ -58,8 +57,8 @@ function playBuffer(audioBuffer, master, t0) {
   return source
 }
 
-// Fires a weapon: plays its file once, or several times back-to-back
-// (with slight timing jitter) to simulate burst/automatic fire.
+
+// Fires a weapon: plays its file once, or several times back-to-back (with slight timing jitter) to simulate burst/automatic fire.
 export function playWeapon(weapon, masterVolume = 1) {
   const audioCtx = getContext()
   const master = audioCtx.createGain()

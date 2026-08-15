@@ -1,0 +1,27 @@
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+  perspective: 1000px; /* gives child cards a 3D space to tilt in */
+}
+
+.card {
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.12s ease-out;
+}
+
+.card.is-tilting {
+  transition: transform 0.05s ease-out;
+  border-color: rgba(142, 39, 201, 0.45);
+  box-shadow: 0 0 12px 12px rgba(142, 39, 201, 0.45);
+}
+
+.card-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  mix-blend-mode: overlay;
+  z-index: 2;
+}
